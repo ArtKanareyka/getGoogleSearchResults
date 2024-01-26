@@ -31,7 +31,17 @@ console.log(
   filterResultsByText(getGoogleSearchResults(), 'Вводить текст сюда')
 );
 
-function removeNotMatchingResults(textArray) {
+function hideAllResults() {
+  const searchResults = document.querySelectorAll('.tF2Cxc');
+
+  searchResults.forEach((result) => {
+    result.style.display = 'none';
+  });
+}
+
+function showMatchingResults(textArray) {
+  const searchResults = document.querySelectorAll('.tF2Cxc');
+
   searchResults.forEach((result) => {
     const title = result.querySelector('h3')?.textContent || '';
     const link = result.querySelector('a')?.getAttribute('href') || '';
@@ -44,13 +54,44 @@ function removeNotMatchingResults(textArray) {
         description.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    if (!containsText) {
-      result.style.display = 'none';
+    if (containsText) {
+      result.style.display = '';
     }
-    document.querySelector('.cUnQKe').style.display = 'none';
-    document.querySelector('.oIk2Cb').style.display = 'none';
-    document.querySelector('.hlcw0c').style.display = 'none';
+    const classes = [
+      '.cUnQKe',
+      '.oIk2Cb',
+      '.hlcw0c',
+      '.uVMCKf',
+      '.Lv2Cle',
+      '.g.PmEWq',
+    ];
+
+    for (const item of classes) {
+      const element = document.querySelector(item);
+
+      if (element && element.style.display !== null) {
+        element.style.display = 'none';
+      }
+    }
   });
 }
 
-removeNotMatchingResults(['Вводить текст сюда1', 'Вводить текст сюда2']);
+function filterSearchResults(textArray) {
+  hideAllResults();
+  showMatchingResults(textArray);
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.addedNodes.length > 0) {
+        hideAllResults();
+        showMatchingResults(textArray);
+      }
+    });
+  });
+
+  const config = { childList: true, subtree: true };
+
+  observer.observe(document.body, config);
+}
+
+filterSearchResults(['popular', 'open-source']);
